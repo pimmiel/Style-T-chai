@@ -8,27 +8,27 @@
 -- ============================================================
 ALTER TABLE posts ENABLE ROW LEVEL SECURITY;
 
--- Explore feed: anyone can read approved public posts
+DROP POLICY IF EXISTS "posts_public_explore" ON posts;
 CREATE POLICY "posts_public_explore" ON posts
   FOR SELECT
   USING (moderation_status = 'approved' AND 'explore' = ANY(visibility));
 
--- Owners see all of their own posts
+DROP POLICY IF EXISTS "posts_owner_select" ON posts;
 CREATE POLICY "posts_owner_select" ON posts
   FOR SELECT
   USING (auth.uid() = user_id);
 
--- Owners can insert their own posts
+DROP POLICY IF EXISTS "posts_owner_insert" ON posts;
 CREATE POLICY "posts_owner_insert" ON posts
   FOR INSERT
   WITH CHECK (auth.uid() = user_id);
 
--- Owners can update their own posts
+DROP POLICY IF EXISTS "posts_owner_update" ON posts;
 CREATE POLICY "posts_owner_update" ON posts
   FOR UPDATE
   USING (auth.uid() = user_id);
 
--- Owners can delete their own posts
+DROP POLICY IF EXISTS "posts_owner_delete" ON posts;
 CREATE POLICY "posts_owner_delete" ON posts
   FOR DELETE
   USING (auth.uid() = user_id);
@@ -38,17 +38,17 @@ CREATE POLICY "posts_owner_delete" ON posts
 -- ============================================================
 ALTER TABLE groups ENABLE ROW LEVEL SECURITY;
 
--- Any authenticated user can read groups (membership check is in app code)
+DROP POLICY IF EXISTS "groups_authenticated_read" ON groups;
 CREATE POLICY "groups_authenticated_read" ON groups
   FOR SELECT
   USING (auth.uid() IS NOT NULL);
 
--- Only owner can create groups
+DROP POLICY IF EXISTS "groups_owner_insert" ON groups;
 CREATE POLICY "groups_owner_insert" ON groups
   FOR INSERT
   WITH CHECK (auth.uid() = owner_id);
 
--- Only owner can update/delete their group
+DROP POLICY IF EXISTS "groups_owner_write" ON groups;
 CREATE POLICY "groups_owner_write" ON groups
   FOR ALL
   USING (auth.uid() = owner_id);
@@ -58,7 +58,7 @@ CREATE POLICY "groups_owner_write" ON groups
 -- ============================================================
 ALTER TABLE group_members ENABLE ROW LEVEL SECURITY;
 
--- Members can see other members in their groups
+DROP POLICY IF EXISTS "group_members_member_read" ON group_members;
 CREATE POLICY "group_members_member_read" ON group_members
   FOR SELECT
   USING (
@@ -69,12 +69,12 @@ CREATE POLICY "group_members_member_read" ON group_members
     )
   );
 
--- Users can insert themselves as members (joining a group)
+DROP POLICY IF EXISTS "group_members_self_insert" ON group_members;
 CREATE POLICY "group_members_self_insert" ON group_members
   FOR INSERT
   WITH CHECK (auth.uid() = user_id);
 
--- Users can remove themselves; group owners can remove anyone
+DROP POLICY IF EXISTS "group_members_self_or_owner_delete" ON group_members;
 CREATE POLICY "group_members_self_or_owner_delete" ON group_members
   FOR DELETE
   USING (
@@ -89,7 +89,7 @@ CREATE POLICY "group_members_self_or_owner_delete" ON group_members
 -- ============================================================
 ALTER TABLE group_outfits ENABLE ROW LEVEL SECURITY;
 
--- Group members can read approved outfits
+DROP POLICY IF EXISTS "group_outfits_member_read" ON group_outfits;
 CREATE POLICY "group_outfits_member_read" ON group_outfits
   FOR SELECT
   USING (
@@ -100,7 +100,7 @@ CREATE POLICY "group_outfits_member_read" ON group_outfits
     )
   );
 
--- Members can post outfits to groups they belong to
+DROP POLICY IF EXISTS "group_outfits_member_insert" ON group_outfits;
 CREATE POLICY "group_outfits_member_insert" ON group_outfits
   FOR INSERT
   WITH CHECK (
@@ -111,7 +111,7 @@ CREATE POLICY "group_outfits_member_insert" ON group_outfits
     )
   );
 
--- Owners can delete their own outfits
+DROP POLICY IF EXISTS "group_outfits_owner_delete" ON group_outfits;
 CREATE POLICY "group_outfits_owner_delete" ON group_outfits
   FOR DELETE
   USING (auth.uid() = user_id);
@@ -121,7 +121,7 @@ CREATE POLICY "group_outfits_owner_delete" ON group_outfits
 -- ============================================================
 ALTER TABLE group_outfit_votes ENABLE ROW LEVEL SECURITY;
 
--- Members can see votes on outfits in their groups
+DROP POLICY IF EXISTS "votes_member_read" ON group_outfit_votes;
 CREATE POLICY "votes_member_read" ON group_outfit_votes
   FOR SELECT
   USING (
@@ -132,12 +132,12 @@ CREATE POLICY "votes_member_read" ON group_outfit_votes
     )
   );
 
--- Members can vote
+DROP POLICY IF EXISTS "votes_member_insert" ON group_outfit_votes;
 CREATE POLICY "votes_member_insert" ON group_outfit_votes
   FOR INSERT
   WITH CHECK (auth.uid() = user_id);
 
--- Users can remove their own vote
+DROP POLICY IF EXISTS "votes_owner_delete" ON group_outfit_votes;
 CREATE POLICY "votes_owner_delete" ON group_outfit_votes
   FOR DELETE
   USING (auth.uid() = user_id);
