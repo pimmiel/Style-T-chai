@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { Heart, Bookmark } from "lucide-react";
 import { Eyebrow } from "@/components/ui/Eyebrow";
 
@@ -47,7 +48,7 @@ export default function TipCard({ tip }: { tip: TipPost }) {
   };
 
   return (
-    <div className="bg-ink rounded-[20px] overflow-hidden border border-ink shadow-[0_4px_20px_-8px_rgba(60,45,25,.25)] hover:shadow-screen transition-shadow">
+    <div className="bg-ink rounded-[20px] overflow-hidden border border-ink shadow-[0_4px_20px_-8px_rgba(60,45,25,.25)] hover:shadow-screen transition-shadow group">
       {tip.image_url && !imgError && (
         <div className="relative aspect-video overflow-hidden">
           <Image
@@ -64,9 +65,11 @@ export default function TipCard({ tip }: { tip: TipPost }) {
       <div className="p-5 space-y-4">
         <Eyebrow className="text-gold">{tip.tags[0] ?? "Tips"}</Eyebrow>
 
-        <h3 className="font-serif text-lg font-normal leading-snug text-surface line-clamp-2">
-          {tip.title}
-        </h3>
+        <Link href={`/tip/${tip.id}`}>
+          <h3 className="font-serif text-lg font-normal leading-snug text-surface line-clamp-2 group-hover:text-gold transition-colors">
+            {tip.title}
+          </h3>
+        </Link>
 
         <p className="text-sm text-[#C4BBAC] leading-relaxed line-clamp-3">{tip.body}</p>
 
@@ -99,6 +102,13 @@ export default function TipCard({ tip }: { tip: TipPost }) {
             </button>
           </div>
         </div>
+
+        <Link
+          href={`/tip/${tip.id}`}
+          className="inline-block mt-2 text-xs text-gold hover:underline"
+        >
+          อ่านต่อ →
+        </Link>
       </div>
     </div>
   );
