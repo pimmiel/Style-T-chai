@@ -26,6 +26,7 @@ returns trigger language plpgsql as $$
 begin new.updated_at = now(); return new; end;
 $$;
 
+drop trigger if exists user_credentials_updated_at on public.user_credentials;
 create trigger user_credentials_updated_at
   before update on public.user_credentials
   for each row execute function public.set_updated_at();
