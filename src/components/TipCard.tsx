@@ -24,6 +24,7 @@ export default function TipCard({ tip }: { tip: TipPost }) {
   const [saved, setSaved] = useState(tip._saved ?? false);
   const [likeCount, setLikeCount] = useState(tip.likes);
   const [saveCount, setSaveCount] = useState(tip.saves);
+  const [imgError, setImgError] = useState(false);
 
   const toggleLike = () => {
     const next = !liked;
@@ -47,7 +48,7 @@ export default function TipCard({ tip }: { tip: TipPost }) {
 
   return (
     <div className="bg-ink rounded-[20px] overflow-hidden border border-ink shadow-[0_4px_20px_-8px_rgba(60,45,25,.25)] hover:shadow-screen transition-shadow">
-      {tip.image_url && (
+      {tip.image_url && !imgError && (
         <div className="relative aspect-video overflow-hidden">
           <Image
             src={tip.image_url}
@@ -55,6 +56,7 @@ export default function TipCard({ tip }: { tip: TipPost }) {
             fill
             className="object-cover opacity-80"
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+            onError={() => setImgError(true)}
           />
         </div>
       )}

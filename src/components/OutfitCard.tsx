@@ -36,6 +36,24 @@ interface OutfitCardProps {
   onUpdate?: (updated: any) => void;
 }
 
+function ColorPlaceholder({ colors, caption }: { colors: { hex: string }[]; caption: string }) {
+  const c = colors.map((x) => x.hex);
+  const [a, b, d] = [c[0] ?? "#c4a882", c[1] ?? "#8b7355", c[2] ?? "#f5f0e8"];
+  return (
+    <div
+      className="absolute inset-0 flex flex-col items-center justify-center gap-3"
+      style={{ background: `linear-gradient(160deg, ${a} 0%, ${b} 55%, ${d} 100%)` }}
+    >
+      <div className="flex gap-2">
+        {c.map((hex, i) => (
+          <div key={i} className="w-6 h-6 rounded-full border-2 border-white/60 shadow-md" style={{ backgroundColor: hex }} />
+        ))}
+      </div>
+      <p className="text-white/80 text-xs font-medium px-4 text-center line-clamp-2 drop-shadow">{caption}</p>
+    </div>
+  );
+}
+
 export default function OutfitCard({ outfit, isOwner, showOwnerBadge, onDelete, onUpdate }: OutfitCardProps) {
   const { t } = useLanguage();
   const [liked, setLiked] = useState(outfit._liked ?? false);
@@ -46,6 +64,7 @@ export default function OutfitCard({ outfit, isOwner, showOwnerBadge, onDelete, 
   const [showMenu, setShowMenu] = useState(false);
   const [showEdit, setShowEdit] = useState(false);
   const [current, setCurrent] = useState(outfit);
+  const [imgError, setImgError] = useState(false);
 
   const handleDelete = () => { onDelete?.(current.id); };
 
@@ -83,14 +102,19 @@ export default function OutfitCard({ outfit, isOwner, showOwnerBadge, onDelete, 
         {/* Image */}
         <div className="relative aspect-[4/5] overflow-hidden bg-surface-2">
           <Link href={`/post/${current.id}`} className="absolute inset-0 z-0" aria-label={t.card.viewDetail} />
-          <Image
-            src={current.image_url}
-            alt={current.caption}
-            fill
-            unoptimized={current.image_url.startsWith("data:")}
-            className="object-cover group-hover:scale-105 transition-transform duration-500"
-            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-          />
+          {imgError || !current.image_url ? (
+            <ColorPlaceholder colors={current.colors} caption={current.caption} />
+          ) : (
+            <Image
+              src={current.image_url}
+              alt={current.caption}
+              fill
+              unoptimized={current.image_url.startsWith("data:")}
+              className="object-cover group-hover:scale-105 transition-transform duration-500"
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+              onError={() => setImgError(true)}
+            />
+          )}
 
           {/* Owner badge — only when no menu (non-editable contexts) */}
           {showOwnerBadge && !isOwner && (

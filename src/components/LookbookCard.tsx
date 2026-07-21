@@ -22,6 +22,12 @@ type LookbookPost = {
   _saved?: boolean;
 };
 
+function ImgWithFallback({ src, alt, sizes, className }: { src: string; alt: string; sizes: string; className?: string }) {
+  const [err, setErr] = useState(false);
+  if (err) return <div className="absolute inset-0 bg-surface-3" />;
+  return <Image src={src} alt={alt} fill className={className ?? "object-cover"} sizes={sizes} onError={() => setErr(true)} />;
+}
+
 export default function LookbookCard({ lookbook }: { lookbook: LookbookPost }) {
   const [liked, setLiked] = useState(lookbook._liked ?? false);
   const [saved, setSaved] = useState(lookbook._saved ?? false);
@@ -59,14 +65,14 @@ export default function LookbookCard({ lookbook }: { lookbook: LookbookPost }) {
       <div className="relative">
         {displayImages.length === 1 && (
           <div className="relative aspect-[4/3] overflow-hidden bg-surface-2">
-            <Image src={displayImages[0]} alt={lookbook.title} fill className="object-cover" sizes="(max-width: 640px) 100vw, 50vw" />
+            <ImgWithFallback src={displayImages[0]} alt={lookbook.title} sizes="(max-width: 640px) 100vw, 50vw" />
           </div>
         )}
         {displayImages.length === 2 && (
           <div className="grid grid-cols-2 gap-px aspect-[4/3]">
             {displayImages.map((src, i) => (
               <div key={i} className="relative overflow-hidden bg-surface-2">
-                <Image src={src} alt="" fill className="object-cover" sizes="25vw" />
+                <ImgWithFallback src={src} alt="" sizes="25vw" />
               </div>
             ))}
           </div>
@@ -74,18 +80,18 @@ export default function LookbookCard({ lookbook }: { lookbook: LookbookPost }) {
         {displayImages.length >= 3 && (
           <div className="grid grid-cols-2 gap-px">
             <div className="relative aspect-square overflow-hidden bg-surface-2 row-span-2">
-              <Image src={displayImages[0]} alt="" fill className="object-cover" sizes="25vw" />
+              <ImgWithFallback src={displayImages[0]} alt="" sizes="25vw" />
             </div>
             <div className="grid grid-rows-2 gap-px">
               {displayImages.slice(1, 3).map((src, i) => (
                 <div key={i} className="relative aspect-square overflow-hidden bg-surface-2">
-                  <Image src={src} alt="" fill className="object-cover" sizes="15vw" />
+                  <ImgWithFallback src={src} alt="" sizes="15vw" />
                 </div>
               ))}
             </div>
             {displayImages[3] && (
               <div className="relative aspect-square overflow-hidden bg-surface-2 col-start-2">
-                <Image src={displayImages[3]} alt="" fill className="object-cover" sizes="15vw" />
+                <ImgWithFallback src={displayImages[3]} alt="" sizes="15vw" />
                 {extraCount > 0 && (
                   <div className="absolute inset-0 bg-black/50 flex items-center justify-center text-white font-semibold text-sm">
                     +{extraCount}
