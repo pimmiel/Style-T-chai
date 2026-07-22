@@ -3,9 +3,8 @@
 import { useState } from "react";
 import { signIn } from "next-auth/react";
 import Link from "next/link";
-import { Users2, Plus, ChevronRight, Image, Calendar, Heart, Bell, Check } from "lucide-react";
+import { Users2, Plus, ChevronRight, Image, Calendar, Heart, Bell } from "lucide-react";
 import type { Group } from "@/lib/supabase";
-import { PLAN_DETAILS } from "@/lib/plans";
 import { DisplayHeading } from "@/components/ui/DisplayHeading";
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
 
@@ -67,60 +66,6 @@ export default function GroupsClient({ initialGroups, userId, upcomingThemes = [
                 <span className="text-sm text-ink-soft">{text}</span>
               </div>
             ))}
-          </div>
-
-          <div className="space-y-4">
-            <div className="text-left">
-              <DisplayHeading as="h2" className="text-lg">{t.groups.choosePlan}</DisplayHeading>
-              <p className="text-xs text-muted-foreground mt-0.5">{t.groups.ownerPaysOnce}</p>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              {PLAN_DETAILS.map((plan) => {
-                const isPopular = plan.members === 5;
-                return (
-                  <div
-                    key={plan.members}
-                    className={`relative rounded-[16px] border p-4 flex flex-col gap-3 ${
-                      isPopular ? "bg-ink border-ink text-surface" : "border-line"
-                    }`}
-                  >
-                    {isPopular && (
-                      <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                        <span className="bg-gold text-ink text-xs font-semibold px-3 py-0.5 rounded-full">
-                          {t.groups.popular}
-                        </span>
-                      </div>
-                    )}
-                    <div>
-                      <p className={`font-semibold ${isPopular ? "text-surface" : "text-ink"}`}>{plan.label}</p>
-                      <p className={`text-xs ${isPopular ? "text-[#C4BBAC]" : "text-muted-foreground"}`}>{plan.description}</p>
-                    </div>
-                    <div className="flex items-baseline gap-1">
-                      <span className={`font-serif text-2xl font-normal ${isPopular ? "text-gold" : "text-ink"}`}>{plan.price}</span>
-                      <span className={`text-xs ${isPopular ? "text-[#C4BBAC]" : "text-muted-foreground"}`}>{t.groups.priceUnit}</span>
-                    </div>
-                    <ul className="space-y-1.5 text-xs flex-1">
-                      {[t.groups.planMembers(plan.members), t.groups.planFeatureVote, t.groups.planFeaturePlan].map((f) => (
-                        <li key={f} className="flex items-center gap-1.5">
-                          <Check className={`w-3.5 h-3.5 shrink-0 ${isPopular ? "text-gold" : "text-primary"}`} />
-                          <span className={isPopular ? "text-[#C4BBAC]" : "text-ink-soft"}>{f}</span>
-                        </li>
-                      ))}
-                    </ul>
-                    <button
-                      onClick={() => signIn(undefined, { callbackUrl: "/subscription" })}
-                      className={`w-full py-2 rounded-full text-xs font-semibold transition-colors ${
-                        isPopular ? "bg-gold text-ink hover:bg-gold/90" : "border border-line text-ink hover:bg-surface-2"
-                      }`}
-                    >
-                      {t.groups.subscribe}
-                    </button>
-                  </div>
-                );
-              })}
-            </div>
-            <p className="text-center text-xs text-muted-foreground">{t.groups.footer}</p>
           </div>
 
           <button
